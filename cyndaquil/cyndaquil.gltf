@@ -5865,17 +5865,17 @@
         {
             "mimeType" : "image/png",
             "name" : "Body",
-            "uri" : "Body.png"
+            "uri" : "textures/body.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "Eyes",
-            "uri" : "Eyes.png"
+            "uri" : "textures/eyes.png"
         },
         {
             "mimeType" : "image/png",
             "name" : "Flames",
-            "uri" : "Flames.png"
+            "uri" : "textures/flames.png"
         }
     ],
     "skins" : [
@@ -11241,7 +11241,7 @@
     "buffers" : [
         {
             "byteLength" : 641744,
-            "uri" : "cyndaquil02.bin"
+            "uri" : "cyndaquil.bin"
         }
     ]
 }
