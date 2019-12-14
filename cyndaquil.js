@@ -14,6 +14,11 @@ var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
 var container, camera, scene, renderer;
+var figures = [];
+
+var xSpeed = 0.1;
+var ySpeed = 0.03;
+var zSpeed = 0.1;
 
 var character;
 
@@ -101,6 +106,10 @@ function init() {
     renderer.gammaOutput = true;
     renderer.shadowMap.enabled = true;
 
+    // Spheres
+    createSphere(1, 'iscorn.jpeg', 50, 100);
+    createSphere(2, 'logo_uffs.png', -50, 100);
+
     // STATS
 
     stats = new Stats();
@@ -143,8 +152,36 @@ function onWindowResize() {
 
 }
 
+function createSphere(index, url, x, y) {
+    var textureLoader = new THREE.TextureLoader();
+
+    var materials = [
+        new THREE.MeshBasicMaterial({map: textureLoader.load( 'cyndaquil/textures/' + url )})
+    ];
+
+    var geometry = new THREE.SphereGeometry(40, 100, 30);
+
+    figures[index] = new THREE.Mesh(geometry,materials);
+    scene.add( figures[index] );
+    figures[index].position.x -= x;
+    figures[index].position.y += y;
+}
+
+function rotateFigures() {
+    figures.forEach(figure => {
+        if ( figure != undefined ) {
+            // figure.rotation.x -= xSpeed * 0.2;
+            figure.rotation.y -= ySpeed;
+            // figure.rotation.z -= zSpeed * 0.3;
+        }
+    });
+}
+
 function animate() {
     requestAnimationFrame(animate);
+
+    rotateFigures();
+
     renderer.render(scene, camera);
 
     stats.update();
