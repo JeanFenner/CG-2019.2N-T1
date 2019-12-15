@@ -9,11 +9,13 @@ import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threej
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js';
 import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js';
 import Stats from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/stats.module.js';
+import { GUI } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/dat.gui.module.js';
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
 
 var container, camera, scene, renderer;
+var mixer, actions, activeAction, previousAction;
 var figures = [];
 
 var xSpeed = 0.1;
@@ -22,15 +24,16 @@ var zSpeed = 0.1;
 
 var character;
 
-var gui, playbackConfig = {
-    wireframe: false
-};
+var gui;
 
 var controls;
 
 var clock = new THREE.Clock();
 
 var stats;
+
+var api = { state: 'Idle' };
+
 
 init();
 animate();
@@ -106,7 +109,7 @@ function init() {
     renderer.gammaOutput = true;
     renderer.shadowMap.enabled = true;
 
-    // Spheres
+    // SPHERES
     createSphere(1, 'iscorn.jpeg', 50, 100);
     createSphere(2, 'logo_uffs.png', -50, 100);
 
@@ -125,31 +128,82 @@ function init() {
     controls.target.set(0, 50, 0);
     controls.update();
 
+    
     // CHARACTER
     var loader = new GLTFLoader();
-
+    
     loader.load( './cyndaquil/cyndaquil.gltf', function ( gltf ) {
         character = gltf.scene;
         scene.add( character );
         character.scale.set(10, 10, 10);
+        createGUI(character, gltf.animations);
     }, undefined, function ( e ) {
         console.error( e );
     } );
-
+    
 }
 
 // EVENT HANDLERS
 
 function onWindowResize() {
-
+    
     SCREEN_WIDTH = window.innerWidth;
     SCREEN_HEIGHT = window.innerHeight;
-
+    
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-
+    
     camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
+    
+}
 
+// GUI
+
+function createGUI( character, animations ) {
+    var states = ['GetUp', 'Run', 'Flames', 'Wave', 'Idle', 'GetDown'];
+
+    gui = new GUI();
+    
+    mixer = new THREE.AnimationMixer( character );
+    
+    actions = {};
+    
+    for ( var i = 0; i < animations.length; i ++ ) {
+        var clip = animations[ i ];
+        var action = mixer.clipAction( clip );
+        actions[ clip.name ] = action;
+        if ( states.indexOf( clip.name ) >= 6 ) {
+            action.clampWhenFinished = true;
+            action.loop = THREE.LoopOnce;
+        }
+    }
+
+    // states
+    var statesFolder = gui.addFolder( 'States' );
+    var clipCtrl = statesFolder.add( api, 'state' ).options( states );
+    clipCtrl.onChange( function () {
+        fadeToAction( api.state, 0.5 );
+    } );
+
+    activeAction = actions[ 'Idle' ];
+    activeAction.play();
+    statesFolder.open();
+}
+
+function fadeToAction( name, duration ) {
+    previousAction = activeAction;
+    activeAction = actions[ name ];
+
+    if ( previousAction !== activeAction ) {
+        previousAction.fadeOut( duration );
+    }
+    
+    activeAction
+        .reset()
+        .setEffectiveTimeScale( 1 )
+        .setEffectiveWeight( 1 )
+        .fadeIn( duration )
+        .play();
 }
 
 function createSphere(index, url, x, y) {
@@ -162,6 +216,7 @@ function createSphere(index, url, x, y) {
     var geometry = new THREE.SphereGeometry(40, 100, 30);
 
     figures[index] = new THREE.Mesh(geometry,materials);
+
     scene.add( figures[index] );
     figures[index].position.x -= x;
     figures[index].position.y += y;
@@ -178,11 +233,16 @@ function rotateFigures() {
 }
 
 function animate() {
+    var delta = clock.getDelta();
+    if ( mixer ) mixer.update( delta );
+
     requestAnimationFrame(animate);
+
 
     rotateFigures();
 
     renderer.render(scene, camera);
 
     stats.update();
+    controls.update();
 }
