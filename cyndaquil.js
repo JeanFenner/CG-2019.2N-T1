@@ -18,9 +18,7 @@ var container, camera, scene, renderer;
 var mixer, actions, activeAction, previousAction;
 var figures = [];
 
-var xSpeed = 0.1;
-var ySpeed = 0.03;
-var zSpeed = 0.1;
+var t = 0;
 
 var character;
 
@@ -110,10 +108,13 @@ function init() {
     renderer.shadowMap.enabled = true;
 
     // SPHERES
-    createSphere(1, 'iscorn.jpeg', -105, 120, '');
-    createSphere(2, 'fernando1.jpeg', -35, 120, '');
-    createSphere(3, 'dino1.jpeg', 35, 120, 'r');
-    createSphere(4, 'raquel1.jpeg', 105, 120, 'r');
+    createSphere(1, 'iscorn.jpeg', -210, 120);
+    createSphere(2, 'padilha.jpg', -140, 120);
+    createSphere(3, 'grazi1.jpg', -70, 120);
+    createSphere(4, 'fernando1.jpeg', 0, 120);
+    createSphere(5, 'neri1.jpg', 70, 120);
+    createSphere(6, 'dino1.jpeg', 140, 120);
+    createSphere(7, 'raquel1.jpeg', 210, 120);
 
     // STATS
 
@@ -208,7 +209,7 @@ function fadeToAction( name, duration ) {
         .play();
 }
 
-function createSphere(index, url, x, y, n) {
+function createSphere(index, url, x, y) {
     var textureLoader = new THREE.TextureLoader();
 
     var materials = [
@@ -222,19 +223,15 @@ function createSphere(index, url, x, y, n) {
     scene.add( figures[index] );
     figures[index].position.x -= x;
     figures[index].position.y += y;
-    figures[index].name = n;
 }
 
 function rotateFigures() {
+    t += 0.01;
     figures.forEach(figure => {
-        // console.log(figure);
-        if ( figure != undefined && figure.name == 'r') {
-            // figure.rotation.x -= xSpeed * 0.2;
-            // figure.position.x -= xSpeed * 6;
-            figure.rotation.y -= ySpeed;
-            // figure.rotation.z -= zSpeed * 0.3;
-        } else {
-            figure.rotation.y -= ySpeed;
+        if ( figure != undefined) {
+            figure.rotation.y -= 0.03;
+            figure.position.x += 2 * Math.cos(t) + 0;
+            figure.position.y += 0.4 * Math.sin(t) + 0;
         }
     });
 }
@@ -244,7 +241,6 @@ function animate() {
     if ( mixer ) mixer.update( delta );
 
     requestAnimationFrame(animate);
-
 
     rotateFigures();
 
