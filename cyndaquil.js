@@ -7,9 +7,9 @@
 import * as THREE from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/build/three.module.js';
 
 import { GLTFLoader } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/loaders/GLTFLoader.js';
+import { GUI } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/dat.gui.module.js';
 import { OrbitControls } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/controls/OrbitControls.js';
 import Stats from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/stats.module.js';
-import { GUI } from 'https://threejsfundamentals.org/threejs/resources/threejs/r110/examples/jsm/libs/dat.gui.module.js';
 
 var SCREEN_WIDTH = window.innerWidth;
 var SCREEN_HEIGHT = window.innerHeight;
@@ -110,8 +110,10 @@ function init() {
     renderer.shadowMap.enabled = true;
 
     // SPHERES
-    createSphere(1, 'iscorn.jpeg', 50, 100);
-    createSphere(2, 'logo_uffs.png', -50, 100);
+    createSphere(1, 'iscorn.jpeg', -105, 120, '');
+    createSphere(2, 'fernando1.jpeg', -35, 120, '');
+    createSphere(3, 'dino1.jpeg', 35, 120, 'r');
+    createSphere(4, 'raquel1.jpeg', 105, 120, 'r');
 
     // STATS
 
@@ -128,10 +130,10 @@ function init() {
     controls.target.set(0, 50, 0);
     controls.update();
 
-    
+
     // CHARACTER
     var loader = new GLTFLoader();
-    
+
     loader.load( './cyndaquil/cyndaquil.gltf', function ( gltf ) {
         character = gltf.scene;
         scene.add( character );
@@ -140,21 +142,21 @@ function init() {
     }, undefined, function ( e ) {
         console.error( e );
     } );
-    
+
 }
 
 // EVENT HANDLERS
 
 function onWindowResize() {
-    
+
     SCREEN_WIDTH = window.innerWidth;
     SCREEN_HEIGHT = window.innerHeight;
-    
+
     renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-    
+
     camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
-    
+
 }
 
 // GUI
@@ -163,11 +165,11 @@ function createGUI( character, animations ) {
     var states = ['GetUp', 'Run', 'Flames', 'Wave', 'Idle', 'GetDown'];
 
     gui = new GUI();
-    
+
     mixer = new THREE.AnimationMixer( character );
-    
+
     actions = {};
-    
+
     for ( var i = 0; i < animations.length; i ++ ) {
         var clip = animations[ i ];
         var action = mixer.clipAction( clip );
@@ -197,7 +199,7 @@ function fadeToAction( name, duration ) {
     if ( previousAction !== activeAction ) {
         previousAction.fadeOut( duration );
     }
-    
+
     activeAction
         .reset()
         .setEffectiveTimeScale( 1 )
@@ -206,28 +208,33 @@ function fadeToAction( name, duration ) {
         .play();
 }
 
-function createSphere(index, url, x, y) {
+function createSphere(index, url, x, y, n) {
     var textureLoader = new THREE.TextureLoader();
 
     var materials = [
         new THREE.MeshBasicMaterial({map: textureLoader.load( 'cyndaquil/textures/' + url )})
     ];
 
-    var geometry = new THREE.SphereGeometry(40, 100, 30);
+    var geometry = new THREE.SphereGeometry(30, 100, 30);
 
     figures[index] = new THREE.Mesh(geometry,materials);
 
     scene.add( figures[index] );
     figures[index].position.x -= x;
     figures[index].position.y += y;
+    figures[index].name = n;
 }
 
 function rotateFigures() {
     figures.forEach(figure => {
-        if ( figure != undefined ) {
+        // console.log(figure);
+        if ( figure != undefined && figure.name == 'r') {
             // figure.rotation.x -= xSpeed * 0.2;
+            // figure.position.x -= xSpeed * 6;
             figure.rotation.y -= ySpeed;
             // figure.rotation.z -= zSpeed * 0.3;
+        } else {
+            figure.rotation.y -= ySpeed;
         }
     });
 }
