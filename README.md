@@ -6,7 +6,7 @@ Nome:
 
 ## Ideia geral
 
-- Fazer o pokemon(Cyndaquil) executar ações com teclado e possuir alguns estados estados(correndo, olhando para os lados, etc.)
+- Fazer o pokemon(Cyndaquil) executar ações com teclado e possuir alguns estados (correndo, olhando para os lados, etc.)
 - Conter esferas com imagens de professores da UFFS que ficam movimentando em tela independente do pokemon
 
 ## Formas de interação
