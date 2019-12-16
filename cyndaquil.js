@@ -1,6 +1,20 @@
 /**
+ * Universidade Federal da Fronteira Sul - UFFS
+ * Ciência da Computação
+ * Computação Gráfica
+ * 
+ * Professor
+ * Fernando Bevilacqua
+ * 
+ * Alunos
+ * Elvis de Souza Machado
+ * Jean Carlo Fenner
  *
- *  Cyndaquil
+ * Cyndaquil
+ * 
+ * Ideia geral
+ * Fazer o pokémon (Cyndaquil) executar ações com teclado e possuir alguns estados (correndo, olhando para os lados, etc.).
+ * Conter esferas com imagens de professores da UFFS que ficam movimentando em tela independente do pokemon.
  *
  */
 
@@ -111,13 +125,13 @@ function init() {
     renderer.shadowMap.enabled = true;
 
     // SPHERES
-    createSphere(1, 'iscorn.jpeg', -210, 120);
-    createSphere(2, 'padilha.jpg', -140, 120);
+    createSphere(1, 'emilio1.jpeg', -210, 120);
+    createSphere(2, 'padilha1.jpg', -140, 120);
     createSphere(3, 'grazi1.jpg', -70, 120);
     createSphere(4, 'fernando1.jpeg', 0, 120);
     createSphere(5, 'neri1.jpg', 70, 120);
-    createSphere(6, 'dino1.jpeg', 140, 120);
-    createSphere(7, 'raquel1.jpeg', 210, 120);
+    createSphere(7, 'raquel1.jpeg', 140, 120);
+    createSphere(6, 'dino1.jpeg', 210, 120);
 
     // STATS
 
@@ -220,7 +234,7 @@ function onMouseDown(e){
 // GUI
 
 function createGUI( character, animations ) {
-    var states = ['GetUp', 'Run', 'Flames', 'Wave', 'Idle', 'GetDown'];
+    var states = ['Idle', 'Run', 'Wave'];
 
     gui = new GUI();
 
@@ -232,7 +246,7 @@ function createGUI( character, animations ) {
         var clip = animations[ i ];
         var action = mixer.clipAction( clip );
         actions[ clip.name ] = action;
-        if ( states.indexOf( clip.name ) >= 6 ) {
+        if ( states.indexOf( clip.name ) >= 3 ) {
             action.clampWhenFinished = true;
             action.loop = THREE.LoopOnce;
         }
