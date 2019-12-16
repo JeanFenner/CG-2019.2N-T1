@@ -18,6 +18,9 @@ var container, camera, scene, renderer;
 var mixer, actions, activeAction, previousAction;
 var figures = [];
 
+var xSpeed = 0.7;
+var ySpeed = 0.7;
+var zSpeed = 0.7;
 var t = 0;
 
 var character;
@@ -44,7 +47,7 @@ function init() {
     // CAMERA
 
     camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 1, 1000);
-    camera.position.set(0, 150, 400);
+    camera.position.set(0, 150, -400);
 
     // SCENE
 
@@ -124,6 +127,9 @@ function init() {
     // EVENTS
 
     window.addEventListener('resize', onWindowResize, false);
+    window.addEventListener('keydown', onDocumentKeyDown, false );
+    window.addEventListener('keyup', onDocumentKeyUp, false );
+    window.addEventListener('click', onMouseDown, false);
 
     // CONTROLS
 
@@ -158,6 +164,57 @@ function onWindowResize() {
     camera.aspect = SCREEN_WIDTH / SCREEN_HEIGHT;
     camera.updateProjectionMatrix();
 
+}
+
+function onDocumentKeyDown(e) {
+    var keyCode = event.which;
+    var newAnimation = { state: 'Idle' };
+
+    if (e){
+        if (keyCode == 87) {
+            character.position.z += zSpeed;
+            character.rotation.y = 0;
+            newAnimation.state = 'Run';
+        } else if (keyCode == 83) {
+            character.position.z -= zSpeed;
+            character.rotation.y = 3;
+            newAnimation.state = 'Run';
+        } else if (keyCode == 65) {
+            character.position.x += xSpeed;
+            character.rotation.y = 1.5;
+            newAnimation.state = 'Run';
+        } else if (keyCode == 68) {
+            character.position.x -= xSpeed;
+            character.rotation.y = -1.5;
+            newAnimation.state = 'Run';
+        }
+    }
+    if (newAnimation.state != api.state){
+        api.state = newAnimation.state;
+        fadeToAction( api.state, 0.5 );
+    }
+};
+
+function onDocumentKeyUp(e) {
+    var newAnimation = { state: 'Idle' };
+
+    if (newAnimation.state != api.state){
+        api.state = newAnimation.state;
+        fadeToAction( api.state, 0.5 );
+    }
+};
+
+function onMouseDown(e){
+    var newAnimation = { state: '' };
+
+    if (e){
+        if(api.state != 'Wave')
+            newAnimation.state = 'Wave';
+        if(api.state != 'Idle')
+            newAnimation.state = 'Idle';
+    }
+    api.state = newAnimation.state;
+    fadeToAction( api.state, 0.5 );
 }
 
 // GUI
@@ -231,7 +288,6 @@ function rotateFigures() {
         if ( figure != undefined) {
             figure.rotation.y -= 0.03;
             figure.position.x += 2 * Math.cos(t) + 0;
-            figure.position.y += 0.4 * Math.sin(t) + 0;
         }
     });
 }
